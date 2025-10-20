@@ -52,8 +52,7 @@
     
     input[type="text"],
     input[type="url"],
-    textarea,
-    select {
+    textarea {
         width: 100%;
         padding: 10px;
         border: 1px solid #ddd;
@@ -106,21 +105,10 @@
         background: #2196F3;
         color: white;
         width: 100%;
-        margin-bottom: 10px;
     }
     
     .btn-copy:hover {
         background: #0b7dda;
-    }
-    
-    .btn-download {
-        background: #9C27B0;
-        color: white;
-        width: 100%;
-    }
-    
-    .btn-download:hover {
-        background: #7B1FA2;
     }
     
     .preview-section {
@@ -335,20 +323,6 @@
         <input type="url" id="buttonLink" placeholder="https://your-website.com" value="https://example.com/contact">
     </div>
     
-    <div class="form-group">
-        <label for="overlayText">Text Overlay (Optional):</label>
-        <input type="text" id="overlayText" placeholder="e.g. NEW PRODUCT! or 20% OFF!">
-    </div>
-    
-    <div class="form-group">
-        <label for="textPosition">Text Position:</label>
-        <select id="textPosition">
-            <option value="top">Top</option>
-            <option value="center">Center</option>
-            <option value="bottom">Bottom</option>
-        </select>
-    </div>
-    
     <div class="button-group">
         <button class="btn-generate" onclick="generatePreview()">Generate iTabs Code</button>
         <button class="btn-clear" onclick="clearForm()">Clear Form</button>
@@ -362,7 +336,6 @@
     <div class="preview-container">
         <img id="previewImage" class="preview-image" src="" alt="Product">
         <div class="itabs-button" onclick="openPopup()">i</div>
-        <div id="overlayTextPreview" style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 32px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); display: none; width: 90%; text-align: center;"></div>
     </div>
     
     <div class="code-section">
@@ -370,10 +343,7 @@
         <p style="color: #666; margin-bottom: 10px;">Copy this code and paste it on your website:</p>
         <div class="code-box" id="codeBox"></div>
         <button class="btn-copy" onclick="copyCode()">Copy Code</button>
-        <button class="btn-download" onclick="downloadImage()">Download Image for Ads</button>
-        <p style="color: #999; font-size: 12px; margin-top: 10px;">Note: Download works when saved as HTML file, not in preview</p>
         <div class="success-message" id="successMessage">Code copied to clipboard!</div>
-        <div class="success-message" id="downloadMessage">Image downloaded!</div>
     </div>
 </div>
 
@@ -411,8 +381,6 @@
         const section4 = document.getElementById('section4').value;
         const buttonText = document.getElementById('buttonText').value;
         const buttonLink = document.getElementById('buttonLink').value;
-        const overlayText = document.getElementById('overlayText').value;
-        const textPosition = document.getElementById('textPosition').value;
         
         document.getElementById('previewImage').src = imageUrl;
         document.getElementById('popupSection1').textContent = section1;
@@ -421,29 +389,6 @@
         document.getElementById('popupSection4').textContent = section4;
         document.getElementById('popupButton').textContent = buttonText;
         document.getElementById('popupButton').href = buttonLink;
-        
-        // Handle overlay text
-        const overlayElement = document.getElementById('overlayTextPreview');
-        if (overlayText) {
-            overlayElement.textContent = overlayText;
-            overlayElement.style.display = 'block';
-            
-            // Position the text
-            if (textPosition === 'top') {
-                overlayElement.style.top = '20px';
-                overlayElement.style.bottom = 'auto';
-            } else if (textPosition === 'center') {
-                overlayElement.style.top = '50%';
-                overlayElement.style.transform = 'translate(-50%, -50%)';
-                overlayElement.style.bottom = 'auto';
-            } else {
-                overlayElement.style.bottom = '20px';
-                overlayElement.style.top = 'auto';
-                overlayElement.style.transform = 'translateX(-50%)';
-            }
-        } else {
-            overlayElement.style.display = 'none';
-        }
         
         const code = generateCode(imageUrl, section1, section2, section3, section4, buttonText, buttonLink);
         document.getElementById('codeBox').textContent = code;
@@ -508,8 +453,6 @@ function closeItabsPopup(event) {
             document.getElementById('section4').value = '';
             document.getElementById('buttonText').value = '';
             document.getElementById('buttonLink').value = '';
-            document.getElementById('overlayText').value = '';
-            document.getElementById('textPosition').value = 'top';
             document.getElementById('previewSection').classList.remove('active');
         }
         
@@ -541,99 +484,6 @@ function closeItabsPopup(event) {
             setTimeout(() => {
                 successMessage.classList.remove('active');
             }, 3000);
-        }
-        
-        function downloadImage() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = document.getElementById('previewImage');
-            const overlayText = document.getElementById('overlayText').value;
-            const textPosition = document.getElementById('textPosition').value;
-            
-            // Wait for image to load if not already loaded
-            if (!img.complete) {
-                img.onload = function() {
-                    createImageDownload(canvas, ctx, img, overlayText, textPosition);
-                };
-            } else {
-                createImageDownload(canvas, ctx, img, overlayText, textPosition);
-            }
-        }
-        
-        function createImageDownload(canvas, ctx, img, overlayText, textPosition) {
-            // Set canvas size to match image
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            
-            // Draw the image
-            ctx.drawImage(img, 0, 0);
-            
-            // Draw the "i" button
-            const buttonSize = Math.max(canvas.width * 0.08, 40);
-            const buttonX = canvas.width - buttonSize - 20;
-            const buttonY = 20;
-            
-            // Draw button background
-            ctx.fillStyle = 'rgba(33, 150, 243, 0.9)';
-            ctx.beginPath();
-            ctx.arc(buttonX + buttonSize/2, buttonY + buttonSize/2, buttonSize/2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Draw button border
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(buttonX + buttonSize/2, buttonY + buttonSize/2, buttonSize/2, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            // Draw "i" text
-            ctx.fillStyle = 'white';
-            ctx.font = `bold ${buttonSize * 0.6}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('i', buttonX + buttonSize/2, buttonY + buttonSize/2);
-            
-            // Draw overlay text if provided
-            if (overlayText) {
-                const fontSize = Math.max(canvas.width * 0.08, 32);
-                ctx.font = `bold ${fontSize}px Arial`;
-                ctx.fillStyle = 'white';
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
-                ctx.lineWidth = fontSize * 0.1;
-                ctx.textAlign = 'center';
-                
-                let textY;
-                if (textPosition === 'top') {
-                    textY = fontSize + 20;
-                } else if (textPosition === 'center') {
-                    textY = canvas.height / 2;
-                } else {
-                    textY = canvas.height - fontSize - 20;
-                }
-                
-                // Draw text shadow
-                ctx.strokeText(overlayText, canvas.width / 2, textY);
-                // Draw text
-                ctx.fillText(overlayText, canvas.width / 2, textY);
-            }
-            
-            // Convert to blob and download
-            canvas.toBlob(function(blob) {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'itabs-image.png';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                const downloadMessage = document.getElementById('downloadMessage');
-                downloadMessage.classList.add('active');
-                setTimeout(() => {
-                    downloadMessage.classList.remove('active');
-                }, 3000);
-            });
         }
     </script>
 
