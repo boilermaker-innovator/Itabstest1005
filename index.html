@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube iTabs Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,260 +13,158 @@
         }
 
 ```
-    :root {
-        --bg-dark: #0a0a0a;
-        --bg-card: #141414;
-        --accent: #ff4444;
-        --accent-glow: rgba(255, 68, 68, 0.3);
-        --text-primary: #ffffff;
-        --text-secondary: #a0a0a0;
-        --border: #2a2a2a;
-        --success: #00ff88;
-    }
-
     body {
-        font-family: 'Work Sans', sans-serif;
-        background: var(--bg-dark);
-        color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        background: #f5f5f5;
+        color: #333;
         line-height: 1.6;
-        min-height: 100vh;
-        background-image: 
-            radial-gradient(ellipse at top right, rgba(255, 68, 68, 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse at bottom left, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+        padding: 20px;
     }
 
     .container {
-        max-width: 1200px;
+        max-width: 600px;
         margin: 0 auto;
-        padding: 40px 20px;
-    }
-
-    header {
-        text-align: center;
-        margin-bottom: 60px;
-        animation: fadeInDown 0.8s ease;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
     h1 {
-        font-family: 'Crimson Pro', serif;
-        font-size: 4.5rem;
-        font-weight: 700;
-        margin-bottom: 16px;
-        background: linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        letter-spacing: -2px;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #000;
     }
 
     .subtitle {
-        font-size: 1.2rem;
-        color: var(--text-secondary);
-        font-weight: 400;
-    }
-
-    .main-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-        animation: fadeIn 1s ease 0.3s backwards;
-    }
-
-    .panel {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 32px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .panel::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, var(--accent), var(--success));
-        opacity: 0.5;
-    }
-
-    .panel-title {
-        font-family: 'Crimson Pro', serif;
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 24px;
-        color: var(--text-primary);
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 30px;
     }
 
     .input-group {
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
     label {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
+        font-weight: 600;
         font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 1px;
     }
 
-    input, textarea {
+    input {
         width: 100%;
-        background: var(--bg-dark);
-        border: 1px solid var(--border);
-        color: var(--text-primary);
-        padding: 14px 16px;
-        border-radius: 8px;
-        font-family: 'Work Sans', sans-serif;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
         font-size: 1rem;
-        transition: all 0.3s ease;
     }
 
-    input:focus, textarea:focus {
+    input:focus {
         outline: none;
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--accent-glow);
+        border-color: #667eea;
     }
 
-    textarea {
-        resize: vertical;
-        min-height: 120px;
-        font-family: 'Courier New', monospace;
+    .info-box {
+        background: #f8f9fa;
+        border-left: 3px solid #667eea;
+        padding: 12px;
+        margin-bottom: 20px;
         font-size: 0.9rem;
+        color: #555;
+    }
+
+    .info-box a {
+        color: #667eea;
     }
 
     .btn {
-        background: linear-gradient(135deg, var(--accent) 0%, #ff6666 100%);
+        background: #667eea;
         color: white;
         border: none;
-        padding: 16px 32px;
-        border-radius: 8px;
+        padding: 14px;
+        border-radius: 4px;
         font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 1px;
         width: 100%;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        transition: left 0.5s ease;
-    }
-
-    .btn:hover::before {
-        left: 100%;
     }
 
     .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px var(--accent-glow);
+        background: #5568d3;
     }
 
     .btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        transform: none;
-    }
-
-    .btn-secondary {
-        background: var(--bg-dark);
-        border: 1px solid var(--border);
-        margin-top: 12px;
-    }
-
-    .btn-secondary:hover {
-        background: var(--border);
-        box-shadow: none;
     }
 
     .preview-container {
-        background: var(--bg-dark);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 24px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        padding: 15px;
+        margin-top: 20px;
         display: none;
     }
 
     .preview-container.active {
         display: block;
-        animation: fadeIn 0.5s ease;
     }
 
     .video-preview {
         display: flex;
-        gap: 16px;
+        gap: 12px;
         align-items: flex-start;
     }
 
     .video-preview img {
-        width: 120px;
-        height: 90px;
+        width: 100px;
+        height: 75px;
         object-fit: cover;
         border-radius: 4px;
     }
 
     .video-info h3 {
-        font-size: 1.1rem;
-        margin-bottom: 8px;
-        color: var(--text-primary);
+        font-size: 1rem;
+        margin-bottom: 4px;
     }
 
     .video-info p {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        line-height: 1.4;
+        font-size: 0.85rem;
+        color: #666;
     }
 
     .status-message {
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-top: 16px;
-        font-size: 0.9rem;
+        padding: 12px;
+        border-radius: 4px;
+        margin-top: 15px;
         display: none;
     }
 
     .status-message.active {
         display: block;
-        animation: slideIn 0.3s ease;
     }
 
     .status-message.success {
-        background: rgba(0, 255, 136, 0.1);
-        border: 1px solid rgba(0, 255, 136, 0.3);
-        color: var(--success);
+        background: #d4edda;
+        color: #155724;
     }
 
     .status-message.error {
-        background: rgba(255, 68, 68, 0.1);
-        border: 1px solid rgba(255, 68, 68, 0.3);
-        color: var(--accent);
+        background: #f8d7da;
+        color: #721c24;
     }
 
     .code-output {
-        background: #000000;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 24px;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        margin-top: 20px;
         font-family: 'Courier New', monospace;
         font-size: 0.85rem;
-        color: #00ff88;
-        max-height: 500px;
+        max-height: 400px;
         overflow-y: auto;
         display: none;
         white-space: pre-wrap;
@@ -276,14 +173,12 @@
 
     .code-output.active {
         display: block;
-        animation: fadeIn 0.5s ease;
     }
 
     .loading {
         display: none;
         text-align: center;
         padding: 20px;
-        color: var(--text-secondary);
     }
 
     .loading.active {
@@ -291,13 +186,13 @@
     }
 
     .spinner {
-        border: 3px solid var(--border);
-        border-top: 3px solid var(--accent);
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
         border-radius: 50%;
         width: 40px;
         height: 40px;
         animation: spin 1s linear infinite;
-        margin: 0 auto 12px;
+        margin: 0 auto 10px;
     }
 
     @keyframes spin {
@@ -305,60 +200,17 @@
         100% { transform: rotate(360deg); }
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeInDown {
-        from { opacity: 0; transform: translateY(-30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideIn {
-        from { transform: translateX(-20px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-
-    .info-box {
-        background: rgba(255, 68, 68, 0.05);
-        border: 1px solid rgba(255, 68, 68, 0.2);
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 24px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-    }
-
-    .info-box a {
-        color: var(--accent);
-        text-decoration: none;
-    }
-
-    .info-box a:hover {
-        text-decoration: underline;
-    }
-
-    @media (max-width: 968px) {
-        .main-grid {
-            grid-template-columns: 1fr;
-        }
-
-        h1 {
-            font-size: 3rem;
-        }
-    }
-
     footer {
         text-align: center;
-        margin-top: 60px;
-        padding: 20px;
-        color: var(--text-secondary);
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+        color: #666;
         font-size: 0.9rem;
     }
 
     footer a {
-        color: var(--accent);
+        color: #667eea;
         text-decoration: none;
     }
 </style>
@@ -367,81 +219,61 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>YouTube iTabs</h1>
-            <p class="subtitle">Transform any YouTube video into an interactive product display</p>
-        </header>
+        <h1>YouTube iTabs Generator</h1>
+        <p class="subtitle">Transform any YouTube video into an interactive product display</p>
 
 ```
-    <div class="main-grid">
-        <div class="panel">
-            <h2 class="panel-title">Video Input</h2>
-            
-            <div class="info-box">
-                📺 Paste any YouTube URL. The generator will extract video details and create compelling marketing copy using AI.
-            </div>
-
-            <div class="input-group">
-                <label for="youtubeUrl">YouTube URL</label>
-                <input 
-                    type="text" 
-                    id="youtubeUrl" 
-                    placeholder="https://www.youtube.com/watch?v=..."
-                >
-            </div>
-
-            <div class="input-group">
-                <label for="geminiKey">Gemini API Key</label>
-                <input 
-                    type="password" 
-                    id="geminiKey" 
-                    placeholder="Your Gemini API key for AI content generation"
-                >
-                <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 6px;">
-                    Get your free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--accent);">Google AI Studio</a>
-                </small>
-            </div>
-
-            <div class="input-group">
-                <label for="productName">Product/Video Name (Optional)</label>
-                <input 
-                    type="text" 
-                    id="productName" 
-                    placeholder="Leave blank to use video title"
-                >
-            </div>
-
-            <button class="btn" onclick="generateiTabs()">Generate iTabs</button>
-
-            <div class="preview-container" id="videoPreview"></div>
-            <div class="status-message" id="statusMessage"></div>
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Analyzing video and generating content...</p>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h2 class="panel-title">Generated Code</h2>
-            
-            <div class="info-box">
-                💻 Copy the generated code and paste it into your website, landing page, or campaign.
-            </div>
-
-            <div id="outputArea" style="min-height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
-                <p>Your iTabs code will appear here...</p>
-            </div>
-
-            <div class="code-output" id="codeOutput"></div>
-            
-            <button class="btn btn-secondary" id="copyBtn" onclick="copyCode()" style="display: none;">
-                Copy Code to Clipboard
-            </button>
-        </div>
+    <div class="info-box">
+        Paste a YouTube URL. The generator will extract video details and create marketing copy using AI.
     </div>
 
+    <div class="input-group">
+        <label for="youtubeUrl">YouTube URL</label>
+        <input 
+            type="text" 
+            id="youtubeUrl" 
+            placeholder="https://www.youtube.com/watch?v=..."
+        >
+    </div>
+
+    <div class="input-group">
+        <label for="geminiKey">Gemini API Key</label>
+        <input 
+            type="password" 
+            id="geminiKey" 
+            placeholder="Your Gemini API key"
+        >
+        <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 6px;">
+            Get your free key at <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a>
+        </small>
+    </div>
+
+    <div class="input-group">
+        <label for="productName">Product Name (Optional)</label>
+        <input 
+            type="text" 
+            id="productName" 
+            placeholder="Leave blank to use video title"
+        >
+    </div>
+
+    <button class="btn" onclick="generateiTabs()">Generate iTabs</button>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Generating content...</p>
+    </div>
+
+    <div class="preview-container" id="videoPreview"></div>
+    <div class="status-message" id="statusMessage"></div>
+    <div class="code-output" id="codeOutput"></div>
+    
+    <button class="btn" id="copyBtn" onclick="copyCode()" style="display: none; margin-top: 15px;">
+        Copy Code
+    </button>
+
     <footer>
-        <p>Built with ❤️ for creators • Powered by <a href="https://ai.google.dev/" target="_blank">Gemini AI</a></p>
+        Built for creators • Powered by <a href="https://ai.google.dev/" target="_blank">Gemini AI</a>
     </footer>
 </div>
 
@@ -600,7 +432,6 @@ Keep each section concise, compelling, and focused. Write in an enthusiastic but
             document.getElementById('codeOutput').textContent = generatedCode;
             document.getElementById('codeOutput').classList.add('active');
             document.getElementById('copyBtn').style.display = 'block';
-            document.getElementById('outputArea').style.display = 'none';
 
             showStatus('iTabs code generated successfully!', 'success');
 
@@ -752,13 +583,9 @@ setInterval(function() {
     function copyCode() {
         navigator.clipboard.writeText(generatedCode).then(() => {
             const btn = document.getElementById('copyBtn');
-            const originalText = btn.textContent;
             btn.textContent = '✓ Copied!';
-            btn.style.background = 'linear-gradient(135deg, var(--success) 0%, #00dd77 100%)';
-            
             setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '';
+                btn.textContent = 'Copy Code';
             }, 2000);
         }).catch(err => {
             showStatus('Failed to copy code', 'error');
