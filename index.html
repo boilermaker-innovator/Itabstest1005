@@ -112,20 +112,13 @@
         transition: all 0.2s;
     }
 
-    .btn:hover {
-        background: #5568d3;
-        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-        transform: translateY(-1px);
-    }
-
     .btn:active {
-        transform: translateY(0);
+        transform: scale(0.98);
     }
 
     .btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        transform: none;
     }
 
     .btn-secondary {
@@ -133,16 +126,12 @@
         margin-top: 10px;
     }
 
-    .btn-secondary:hover {
-        background: #5a6268;
-    }
-
     .video-preview {
         background: #f0f4ff;
         border: 2px solid #667eea;
         border-radius: 8px;
         padding: 15px;
-        margin-top: 20px;
+        margin-bottom: 20px;
         display: flex;
         gap: 12px;
         align-items: flex-start;
@@ -257,7 +246,7 @@
         <p class="subtitle">Transform any YouTube video into an interactive product display</p>
 
 ```
-    <!-- Step 1: YouTube URL -->
+    <!-- Step 1 -->
     <div id="step1" class="step active">
         <div class="step-indicator">Step 1 of 3</div>
         
@@ -267,26 +256,18 @@
 
         <div class="input-group">
             <label for="youtubeUrl">YouTube URL</label>
-            <input 
-                type="text" 
-                id="youtubeUrl" 
-                placeholder="https://www.youtube.com/watch?v=..."
-            >
+            <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
         <div class="input-group">
             <label for="geminiKey">Gemini API Key</label>
-            <input 
-                type="password" 
-                id="geminiKey" 
-                placeholder="Your Gemini API key"
-            >
+            <input type="password" id="geminiKey" placeholder="Your Gemini API key">
             <small style="color: #444; font-size: 0.85rem; display: block; margin-top: 6px;">
                 Get your free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color: #667eea; font-weight: 600;">Google AI Studio</a>
             </small>
         </div>
 
-        <button class="btn" onclick="fetchVideoInfo()">Next</button>
+        <button class="btn" id="step1Btn">Next</button>
 
         <div class="loading" id="loading1">
             <div class="spinner"></div>
@@ -296,7 +277,7 @@
         <div class="status-message" id="status1"></div>
     </div>
 
-    <!-- Step 2: Review and Edit Content -->
+    <!-- Step 2 -->
     <div id="step2" class="step">
         <div class="step-indicator">Step 2 of 3</div>
         
@@ -304,25 +285,21 @@
             Review and edit the auto-generated content below.
         </div>
 
-        <div id="videoPreviewContainer"></div>
+        <div id="videoPreview"></div>
 
         <div class="input-group">
             <label for="productName">Product Name</label>
-            <input 
-                type="text" 
-                id="productName" 
-                placeholder="Product name"
-            >
+            <input type="text" id="productName" placeholder="Product name">
         </div>
 
         <div class="input-group">
             <label for="whatIsIt">What is it?</label>
-            <textarea id="whatIsIt" placeholder="Description of what this is..."></textarea>
+            <textarea id="whatIsIt" placeholder="Description..."></textarea>
         </div>
 
         <div class="input-group">
             <label for="whyNeedIt">Why do I need it?</label>
-            <textarea id="whyNeedIt" placeholder="Benefits and value..."></textarea>
+            <textarea id="whyNeedIt" placeholder="Benefits..."></textarea>
         </div>
 
         <div class="input-group">
@@ -335,18 +312,13 @@
             <textarea id="whatDifferent" placeholder="Unique features..."></textarea>
         </div>
 
-        <button class="btn" onclick="generateCode()">Generate Code</button>
-        <button class="btn btn-secondary" onclick="goToStep(1)">Back</button>
-
-        <div class="loading" id="loading2">
-            <div class="spinner"></div>
-            <p>Generating content...</p>
-        </div>
+        <button class="btn" id="step2Btn">Generate Code</button>
+        <button class="btn btn-secondary" id="backBtn">Back</button>
 
         <div class="status-message" id="status2"></div>
     </div>
 
-    <!-- Step 3: Generated Code -->
+    <!-- Step 3 -->
     <div id="step3" class="step">
         <div class="step-indicator">Step 3 of 3 - Complete!</div>
         
@@ -356,8 +328,8 @@
 
         <div class="code-output" id="codeOutput"></div>
         
-        <button class="btn" onclick="copyCode()">Copy Code</button>
-        <button class="btn btn-secondary" onclick="startOver()">Create Another</button>
+        <button class="btn" id="copyBtn">Copy Code</button>
+        <button class="btn btn-secondary" id="newBtn">Create Another</button>
 
         <div class="status-message" id="status3"></div>
     </div>
@@ -365,342 +337,154 @@
 
 <script>
     let videoData = {};
-    let generatedCode = '';
+    let code = '';
 
-    function goToStep(stepNumber) {
-        document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
-        document.getElementById('step' + stepNumber).classList.add('active');
+    function showStep(num) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + num).classList.add('active');
     }
 
-    function showStatus(stepNumber, message, type) {
-        const statusEl = document.getElementById('status' + stepNumber);
-        statusEl.textContent = message;
-        statusEl.className = `status-message active ${type}`;
-        setTimeout(() => {
-            statusEl.classList.remove('active');
-        }, 5000);
+    function showMsg(step, msg, type) {
+        const el = document.getElementById('status' + step);
+        el.textContent = msg;
+        el.className = 'status-message active ' + type;
+        setTimeout(() => el.classList.remove('active'), 5000);
     }
 
-    function extractVideoId(url) {
+    function getVideoId(url) {
         const patterns = [
             /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
             /youtube\.com\/shorts\/([^&\?\/]+)/
         ];
-        
-        for (const pattern of patterns) {
-            const match = url.match(pattern);
-            if (match) return match[1];
+        for (const p of patterns) {
+            const m = url.match(p);
+            if (m) return m[1];
         }
         return null;
     }
 
-    async function getVideoInfo(videoId) {
-        const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
-        if (!response.ok) throw new Error('Failed to fetch video info');
-        return await response.json();
+    async function getVideoInfo(id) {
+        const r = await fetch('https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=' + id + '&format=json');
+        if (!r.ok) throw new Error('Failed to fetch video');
+        return await r.json();
     }
 
-    async function generateWithGemini(prompt, apiKey) {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+    async function callGemini(prompt, key) {
+        const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + key, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
+                contents: [{parts: [{text: prompt}]}]
             })
         });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error?.message || 'Gemini API request failed');
-        }
-
-        const data = await response.json();
+        if (!r.ok) throw new Error('Gemini API failed');
+        const data = await r.json();
         return data.candidates[0].content.parts[0].text;
     }
 
-    async function fetchVideoInfo() {
-        const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
-        const geminiKey = document.getElementById('geminiKey').value.trim();
+    function parseAI(text) {
+        const parse = (regex, fallback) => {
+            const m = text.match(regex);
+            return m ? m[1].trim() : fallback;
+        };
+        return {
+            what: parse(/What is it\?[\s\n]+([\s\S]*?)(?=Why do I need it\?|$)/i, 'Innovative solution.'),
+            why: parse(/Why do I need it\?[\s\n]+([\s\S]*?)(?=How does it work\?|$)/i, 'Exceptional value.'),
+            how: parse(/How does it work\?[\s\n]+([\s\S]*?)(?=What makes it different\?|$)/i, 'Simple to use.'),
+            diff: parse(/What makes it different\?[\s\n]+([\s\S]*?)$/i, 'Unique features.')
+        };
+    }
 
-        if (!youtubeUrl) {
-            showStatus(1, 'Please enter a YouTube URL', 'error');
-            return;
-        }
+    document.getElementById('step1Btn').addEventListener('click', async function() {
+        const url = document.getElementById('youtubeUrl').value.trim();
+        const key = document.getElementById('geminiKey').value.trim();
 
-        if (!geminiKey) {
-            showStatus(1, 'Please enter your Gemini API key', 'error');
-            return;
-        }
+        if (!url) return showMsg(1, 'Please enter a YouTube URL', 'error');
+        if (!key) return showMsg(1, 'Please enter your Gemini API key', 'error');
 
-        const videoId = extractVideoId(youtubeUrl);
-        if (!videoId) {
-            showStatus(1, 'Invalid YouTube URL', 'error');
-            return;
-        }
+        const id = getVideoId(url);
+        if (!id) return showMsg(1, 'Invalid YouTube URL', 'error');
 
         document.getElementById('loading1').classList.add('active');
 
         try {
-            const videoInfo = await getVideoInfo(videoId);
-            
-            videoData = {
-                videoId: videoId,
-                url: youtubeUrl,
-                title: videoInfo.title,
-                author: videoInfo.author_name,
-                geminiKey: geminiKey
-            };
+            const info = await getVideoInfo(id);
+            videoData = {id, url, title: info.title, author: info.author_name, key};
 
-            // Show video preview
-            document.getElementById('videoPreviewContainer').innerHTML = `
-                <div class="video-preview">
-                    <img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="Video thumbnail">
-                    <div class="video-info">
-                        <h3>${videoInfo.title}</h3>
-                        <p>by ${videoInfo.author_name}</p>
-                    </div>
-                </div>
-            `;
+            document.getElementById('videoPreview').innerHTML = 
+                '<div class="video-preview"><img src="https://img.youtube.com/vi/' + id + '/mqdefault.jpg"><div class="video-info"><h3>' + info.title + '</h3><p>by ' + info.author_name + '</p></div></div>';
 
-            // Generate AI content
-            document.getElementById('loading1').innerHTML = '<div class="spinner"></div><p>Generating marketing copy...</p>';
+            const prompt = 'You are a marketing copywriter. Based on this YouTube video, create compelling copy.\n\nVideo Title: ' + info.title + '\nAuthor: ' + info.author_name + '\n\nCreate exactly 4 sections:\n1. "What is it?" - 2-3 sentences\n2. "Why do I need it?" - 2-3 sentences\n3. "How does it work?" - 2-3 sentences\n4. "What makes it different?" - 2-3 sentences\n\nFormat EXACTLY like:\n\nWhat is it?\n[answer]\n\nWhy do I need it?\n[answer]\n\nHow does it work?\n[answer]\n\nWhat makes it different?\n[answer]';
 
-            const prompt = `You are a marketing copywriter. Based on this YouTube video, create compelling marketing copy.
-```
+            const ai = await callGemini(prompt, key);
+            const s = parseAI(ai);
 
-Video Title: ${videoInfo.title}
-Author: ${videoInfo.author_name}
+            document.getElementById('productName').value = info.title;
+            document.getElementById('whatIsIt').value = s.what;
+            document.getElementById('whyNeedIt').value = s.why;
+            document.getElementById('howWorks').value = s.how;
+            document.getElementById('whatDifferent').value = s.diff;
 
-Create exactly 4 sections with these headings:
-
-1. “What is it?” - A 2-3 sentence description
-1. “Why do I need it?” - A 2-3 sentence explanation of benefits
-1. “How does it work?” - A 2-3 sentence explanation
-1. “What makes it different?” - A 2-3 sentence explanation of unique features
-
-Format your response EXACTLY like this:
-
-What is it?
-[Your answer here]
-
-Why do I need it?
-[Your answer here]
-
-How does it work?
-[Your answer here]
-
-What makes it different?
-[Your answer here]`;
-
-```
-            const aiResponse = await generateWithGemini(prompt, geminiKey);
-            const sections = parseAIResponse(aiResponse);
-
-            // Fill in the form
-            document.getElementById('productName').value = videoInfo.title;
-            document.getElementById('whatIsIt').value = sections.whatIsIt;
-            document.getElementById('whyNeedIt').value = sections.whyNeedIt;
-            document.getElementById('howWorks').value = sections.howWorks;
-            document.getElementById('whatDifferent').value = sections.whatDifferent;
-
-            videoData.sections = sections;
-
-            goToStep(2);
-
-        } catch (error) {
-            showStatus(1, error.message, 'error');
+            showStep(2);
+        } catch (e) {
+            showMsg(1, e.message, 'error');
         } finally {
             document.getElementById('loading1').classList.remove('active');
         }
-    }
+    });
 
-    function parseAIResponse(text) {
-        const sections = {
-            whatIsIt: '',
-            whyNeedIt: '',
-            howWorks: '',
-            whatDifferent: ''
-        };
+    document.getElementById('backBtn').addEventListener('click', () => showStep(1));
 
-        const whatMatch = text.match(/What is it\?[\s\n]+([\s\S]*?)(?=Why do I need it\?|$)/i);
-        const whyMatch = text.match(/Why do I need it\?[\s\n]+([\s\S]*?)(?=How does it work\?|$)/i);
-        const howMatch = text.match(/How does it work\?[\s\n]+([\s\S]*?)(?=What makes it different\?|$)/i);
-        const diffMatch = text.match(/What makes it different\?[\s\n]+([\s\S]*?)$/i);
+    document.getElementById('step2Btn').addEventListener('click', function() {
+        const name = document.getElementById('productName').value.trim();
+        const what = document.getElementById('whatIsIt').value.trim();
+        const why = document.getElementById('whyNeedIt').value.trim();
+        const how = document.getElementById('howWorks').value.trim();
+        const diff = document.getElementById('whatDifferent').value.trim();
 
-        sections.whatIsIt = whatMatch ? whatMatch[1].trim() : 'An innovative solution designed to meet your needs.';
-        sections.whyNeedIt = whyMatch ? whyMatch[1].trim() : 'It provides exceptional value and solves real problems.';
-        sections.howWorks = howMatch ? howMatch[1].trim() : 'Simple to use with an intuitive interface.';
-        sections.whatDifferent = diffMatch ? diffMatch[1].trim() : 'Unique features set it apart.';
-
-        return sections;
-    }
-
-    function generateCode() {
-        const productName = document.getElementById('productName').value.trim();
-        const whatIsIt = document.getElementById('whatIsIt').value.trim();
-        const whyNeedIt = document.getElementById('whyNeedIt').value.trim();
-        const howWorks = document.getElementById('howWorks').value.trim();
-        const whatDifferent = document.getElementById('whatDifferent').value.trim();
-
-        if (!productName || !whatIsIt || !whyNeedIt || !howWorks || !whatDifferent) {
-            showStatus(2, 'Please fill in all fields', 'error');
-            return;
+        if (!name || !what || !why || !how || !diff) {
+            return showMsg(2, 'Please fill in all fields', 'error');
         }
 
-        const sections = {
-            whatIsIt: whatIsIt,
-            whyNeedIt: whyNeedIt,
-            howWorks: howWorks,
-            whatDifferent: whatDifferent
-        };
-
-        const thumbnails = [
-            `https://img.youtube.com/vi/${videoData.videoId}/maxresdefault.jpg`,
-            `https://img.youtube.com/vi/${videoData.videoId}/hqdefault.jpg`,
-            `https://img.youtube.com/vi/${videoData.videoId}/mqdefault.jpg`
+        const imgs = [
+            'https://img.youtube.com/vi/' + videoData.id + '/maxresdefault.jpg',
+            'https://img.youtube.com/vi/' + videoData.id + '/hqdefault.jpg',
+            'https://img.youtube.com/vi/' + videoData.id + '/mqdefault.jpg'
         ];
 
-        generatedCode = generateiTabsCode(productName, videoData.url, thumbnails, sections);
-
-        document.getElementById('codeOutput').textContent = generatedCode;
-        goToStep(3);
-    }
-
-    function generateiTabsCode(productName, youtubeUrl, images, sections) {
-        return `<!-- iTabs Code - Paste this where you want your iTabs to appear -->
-```
-
-<div style="background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 500px; margin: 20px auto;">
-    <div style="position: relative; width: 100%; height: 350px; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-        <div style="position: relative; width: 100%; height: 100%; overflow: hidden;">
-            <div id="itabsTrack" style="display: flex; transition: transform 0.4s ease; height: 100%;">
-${images.map((img, index) => `                <div style="min-width: 100%; height: 100%;">
-                    <img src="${img}" alt="${productName} ${index + 1}" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>`).join('\n')}
-            </div>
-        </div>
-        <div style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 15;">
-${images.map((_, index) => `            <div class="itabs-dot" data-slide="${index}" style="width: 10px; height: 10px; border-radius: 50%; background: ${index === 0 ? 'white' : 'rgba(255,255,255,0.5)'}; cursor: pointer; transition: all 0.3s; border: 2px solid white;"></div>`).join('\n')}
-        </div>
-        <div id="itabsCounter" style="position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 15px; font-size: 14px; font-weight: bold; z-index: 15;">1/${images.length}</div>
-        <div style="position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; background: rgba(255,255,255,0.95); color: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border: 3px solid white; z-index: 20;" onclick="document.getElementById('itabsPopup').style.display='flex'">i</div>
-    </div>
-    <div style="padding: 25px; text-align: center;">
-        <h3 style="font-size: 1.3em; color: #2d3748; margin-bottom: 10px; font-weight: 600;">${productName}</h3>
-        <p style="color: #718096; font-size: 1em; line-height: 1.6;">Swipe to see more!</p>
-    </div>
-</div>
-
-<div id="itabsPopup" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 20px;">
-    <div style="position: relative; background-color: white; border-radius: 20px; width: 90%; max-width: 600px; max-height: 80vh; box-shadow: 0 20px 60px rgba(0,0,0,0.4); overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0; font-size: 1.8em;">${productName}</h3>
-            <button onclick="document.getElementById('itabsPopup').style.display='none'" style="color: white; font-size: 40px; font-weight: bold; cursor: pointer; background: none; border: none;">&times;</button>
-        </div>
-        <div style="padding: 35px; max-height: calc(80vh - 120px); overflow-y: auto;">
-            <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px;">What is it?</h4>
-            <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">${sections.whatIsIt}</p>
-
-```
-        <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">Why do I need it?</h4>
-        <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">${sections.whyNeedIt}</p>
-
-        <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">How does it work?</h4>
-        <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">${sections.howWorks}</p>
-
-        <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">What makes it different?</h4>
-        <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">${sections.whatDifferent}</p>
-
-        <a href="${youtubeUrl}" target="_blank" style="display: block; margin: 25px 0; padding: 15px; background: #FF0000; color: white; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1em;">▶ Watch on YouTube</a>
-    </div>
-</div>
-```
-
-</div>
-
-<script>
-var itabsCurrentSlide = 0;
-var itabsTotalSlides = ${images.length};
-var itabsTouchStartX = 0;
-var itabsTouchEndX = 0;
-
-function itabsGoToSlide(index) {
-    itabsCurrentSlide = index;
-    itabsUpdateCarousel();
-}
-
-function itabsUpdateCarousel() {
-    var track = document.getElementById('itabsTrack');
-    var counter = document.getElementById('itabsCounter');
-    var dots = document.querySelectorAll('.itabs-dot');
-    track.style.transform = 'translateX(-' + (itabsCurrentSlide * 100) + '%)';
-    if (counter) counter.textContent = (itabsCurrentSlide + 1) + '/' + itabsTotalSlides;
-    dots.forEach(function(dot, index) {
-        dot.style.background = index === itabsCurrentSlide ? 'white' : 'rgba(255,255,255,0.5)';
-    });
-}
-
-var trackElement = document.getElementById('itabsTrack');
-if (trackElement) {
-    trackElement.addEventListener('touchstart', function(e) {
-        itabsTouchStartX = e.changedTouches[0].screenX;
-    });
-    trackElement.addEventListener('touchend', function(e) {
-        itabsTouchEndX = e.changedTouches[0].screenX;
-        if (itabsTouchEndX < itabsTouchStartX - 50) {
-            itabsCurrentSlide++;
-            if (itabsCurrentSlide >= itabsTotalSlides) itabsCurrentSlide = 0;
-            itabsUpdateCarousel();
-        }
-        if (itabsTouchEndX > itabsTouchStartX + 50) {
-            itabsCurrentSlide--;
-            if (itabsCurrentSlide < 0) itabsCurrentSlide = itabsTotalSlides - 1;
-            itabsUpdateCarousel();
-        }
-    });
-}
-
-document.querySelectorAll('.itabs-dot').forEach(function(dot) {
-    dot.addEventListener('click', function() {
-        itabsGoToSlide(parseInt(this.getAttribute('data-slide')));
-    });
-});
-
-document.getElementById('itabsPopup').addEventListener('click', function(e) {
-    if (e.target.id === 'itabsPopup') this.style.display = 'none';
-});
-
-setInterval(function() {
-    itabsCurrentSlide++;
-    if (itabsCurrentSlide >= itabsTotalSlides) itabsCurrentSlide = 0;
-    itabsUpdateCarousel();
-}, 5000);
-</script>`;
-
-```
-    }
-
-    function copyCode() {
-        navigator.clipboard.writeText(generatedCode).then(() => {
-            showStatus(3, 'Code copied to clipboard!', 'success');
-        }).catch(err => {
-            showStatus(3, 'Failed to copy code', 'error');
+        code = '<!-- iTabs Code -->\n\n<div style="background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 500px; margin: 20px auto;">\n    <div style="position: relative; width: 100%; height: 350px; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">\n        <div style="position: relative; width: 100%; height: 100%; overflow: hidden;">\n            <div id="itabsTrack" style="display: flex; transition: transform 0.4s ease; height: 100%;">\n';
+        
+        imgs.forEach((img, i) => {
+            code += '                <div style="min-width: 100%; height: 100%;"><img src="' + img + '" alt="' + name + ' ' + (i+1) + '" style="width: 100%; height: 100%; object-fit: cover;"></div>\n';
         });
-    }
 
-    function startOver() {
+        code += '            </div>\n        </div>\n        <div style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 15;">\n';
+
+        imgs.forEach((_, i) => {
+            code += '            <div class="itabs-dot" data-slide="' + i + '" style="width: 10px; height: 10px; border-radius: 50%; background: ' + (i === 0 ? 'white' : 'rgba(255,255,255,0.5)') + '; cursor: pointer; transition: all 0.3s; border: 2px solid white;"></div>\n';
+        });
+
+        code += '        </div>\n        <div id="itabsCounter" style="position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 15px; font-size: 14px; font-weight: bold; z-index: 15;">1/' + imgs.length + '</div>\n        <div style="position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; background: rgba(255,255,255,0.95); color: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border: 3px solid white; z-index: 20;" onclick="document.getElementById(\'itabsPopup\').style.display=\'flex\'">i</div>\n    </div>\n    <div style="padding: 25px; text-align: center;">\n        <h3 style="font-size: 1.3em; color: #2d3748; margin-bottom: 10px; font-weight: 600;">' + name + '</h3>\n        <p style="color: #718096; font-size: 1em;">Swipe to see more!</p>\n    </div>\n</div>\n\n<div id="itabsPopup" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 20px;">\n    <div style="position: relative; background-color: white; border-radius: 20px; width: 90%; max-width: 600px; max-height: 80vh; box-shadow: 0 20px 60px rgba(0,0,0,0.4); overflow: hidden;">\n        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; display: flex; justify-content: space-between; align-items: center;">\n            <h3 style="margin: 0; font-size: 1.8em;">' + name + '</h3>\n            <button onclick="document.getElementById(\'itabsPopup\').style.display=\'none\'" style="color: white; font-size: 40px; font-weight: bold; cursor: pointer; background: none; border: none;">&times;</button>\n        </div>\n        <div style="padding: 35px; max-height: calc(80vh - 120px); overflow-y: auto;">\n            <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px;">What is it?</h4>\n            <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">' + what + '</p>\n            <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">Why do I need it?</h4>\n            <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">' + why + '</p>\n            <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">How does it work?</h4>\n            <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">' + how + '</p>\n            <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">What makes it different?</h4>\n            <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">' + diff + '</p>\n            <a href="' + videoData.url + '" target="_blank" style="display: block; margin: 25px 0; padding: 15px; background: #FF0000; color: white; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1em;">▶ Watch on YouTube</a>\n        </div>\n    </div>\n</div>\n\n<script>\nvar itabsCurrentSlide=0,itabsTotalSlides=' + imgs.length + ',itabsTouchStartX=0,itabsTouchEndX=0;function itabsGoToSlide(e){itabsCurrentSlide=e,itabsUpdateCarousel()}function itabsUpdateCarousel(){var e=document.getElementById("itabsTrack"),t=document.getElementById("itabsCounter"),a=document.querySelectorAll(".itabs-dot");e.style.transform="translateX(-"+100*itabsCurrentSlide+"%)",t&&(t.textContent=itabsCurrentSlide+1+"/"+itabsTotalSlides),a.forEach(function(e,t){e.style.background=t===itabsCurrentSlide?"white":"rgba(255,255,255,0.5)"})}var trackElement=document.getElementById("itabsTrack");trackElement&&(trackElement.addEventListener("touchstart",function(e){itabsTouchStartX=e.changedTouches[0].screenX}),trackElement.addEventListener("touchend",function(e){itabsTouchEndX=e.changedTouches[0].screenX,itabsTouchEndX<itabsTouchStartX-50&&(itabsCurrentSlide++,itabsCurrentSlide>=itabsTotalSlides&&(itabsCurrentSlide=0),itabsUpdateCarousel()),itabsTouchEndX>itabsTouchStartX+50&&(itabsCurrentSlide--,itabsCurrentSlide<0&&(itabsCurrentSlide=itabsTotalSlides-1),itabsUpdateCarousel())})),document.querySelectorAll(".itabs-dot").forEach(function(e){e.addEventListener("click",function(){itabsGoToSlide(parseInt(this.getAttribute("data-slide")))})}),document.getElementById("itabsPopup").addEventListener("click",function(e){"itabsPopup"===e.target.id&&(this.style.display="none")}),setInterval(function(){itabsCurrentSlide++,itabsCurrentSlide>=itabsTotalSlides&&(itabsCurrentSlide=0),itabsUpdateCarousel()},5e3);\n<\/script>';
+
+        document.getElementById('codeOutput').textContent = code;
+        showStep(3);
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', function() {
+        navigator.clipboard.writeText(code).then(() => {
+            showMsg(3, 'Code copied to clipboard!', 'success');
+        }).catch(() => {
+            showMsg(3, 'Failed to copy', 'error');
+        });
+    });
+
+    document.getElementById('newBtn').addEventListener('click', function() {
         document.getElementById('youtubeUrl').value = '';
         document.getElementById('geminiKey').value = '';
         videoData = {};
-        generatedCode = '';
-        goToStep(1);
-    }
+        code = '';
+        showStep(1);
+    });
 </script>
 ```
 
