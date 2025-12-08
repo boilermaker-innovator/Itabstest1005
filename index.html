@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iTabs Generator</title>
+    <title>YouTube iTabs Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,503 +13,764 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background: #f5f5f5;
-            max-width: 800px;
-            margin: 0 auto;
+```
+    :root {
+        --bg-dark: #0a0a0a;
+        --bg-card: #141414;
+        --accent: #ff4444;
+        --accent-glow: rgba(255, 68, 68, 0.3);
+        --text-primary: #ffffff;
+        --text-secondary: #a0a0a0;
+        --border: #2a2a2a;
+        --success: #00ff88;
+    }
+
+    body {
+        font-family: 'Work Sans', sans-serif;
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+        background-image: 
+            radial-gradient(ellipse at top right, rgba(255, 68, 68, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse at bottom left, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    header {
+        text-align: center;
+        margin-bottom: 60px;
+        animation: fadeInDown 0.8s ease;
+    }
+
+    h1 {
+        font-family: 'Crimson Pro', serif;
+        font-size: 4.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -2px;
+    }
+
+    .subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+    }
+
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        animation: fadeIn 1s ease 0.3s backwards;
+    }
+
+    .panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--success));
+        opacity: 0.5;
+    }
+
+    .panel-title {
+        font-family: 'Crimson Pro', serif;
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 24px;
+        color: var(--text-primary);
+    }
+
+    .input-group {
+        margin-bottom: 24px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    input, textarea {
+        width: 100%;
+        background: var(--bg-dark);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 14px 16px;
+        border-radius: 8px;
+        font-family: 'Work Sans', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 120px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+    }
+
+    .btn {
+        background: linear-gradient(135deg, var(--accent) 0%, #ff6666 100%);
+        color: white;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+        left: 100%;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px var(--accent-glow);
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-secondary {
+        background: var(--bg-dark);
+        border: 1px solid var(--border);
+        margin-top: 12px;
+    }
+
+    .btn-secondary:hover {
+        background: var(--border);
+        box-shadow: none;
+    }
+
+    .preview-container {
+        background: var(--bg-dark);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 24px;
+        display: none;
+    }
+
+    .preview-container.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .video-preview {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .video-preview img {
+        width: 120px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .video-info h3 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+    }
+
+    .video-info p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+    }
+
+    .status-message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-top: 16px;
+        font-size: 0.9rem;
+        display: none;
+    }
+
+    .status-message.active {
+        display: block;
+        animation: slideIn 0.3s ease;
+    }
+
+    .status-message.success {
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid rgba(0, 255, 136, 0.3);
+        color: var(--success);
+    }
+
+    .status-message.error {
+        background: rgba(255, 68, 68, 0.1);
+        border: 1px solid rgba(255, 68, 68, 0.3);
+        color: var(--accent);
+    }
+
+    .code-output {
+        background: #000000;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 24px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        color: #00ff88;
+        max-height: 500px;
+        overflow-y: auto;
+        display: none;
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+
+    .code-output.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        color: var(--text-secondary);
+    }
+
+    .loading.active {
+        display: block;
+    }
+
+    .spinner {
+        border: 3px solid var(--border);
+        border-top: 3px solid var(--accent);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(-20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .info-box {
+        background: rgba(255, 68, 68, 0.05);
+        border: 1px solid rgba(255, 68, 68, 0.2);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .info-box a {
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+    .info-box a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 968px) {
+        .main-grid {
+            grid-template-columns: 1fr;
         }
-        
+
         h1 {
-            color: #333;
-            margin-bottom: 10px;
+            font-size: 3rem;
         }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-        }
-        
-        .form-section {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #333;
-        }
-        
-        input[type="text"],
-        input[type="url"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-        
-        textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        
-        .btn-generate {
-            background: #4CAF50;
-            color: white;
-            flex: 1;
-        }
-        
-        .btn-generate:hover {
-            background: #45a049;
-        }
-        
-        .btn-clear {
-            background: #f44336;
-            color: white;
-        }
-        
-        .btn-clear:hover {
-            background: #da190b;
-        }
-        
-        .btn-copy {
-            background: #2196F3;
-            color: white;
-            width: 100%;
-        }
-        
-        .btn-copy:hover {
-            background: #0b7dda;
-        }
-        
-        .preview-section {
-            display: none;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .preview-section.active {
-            display: block;
-        }
-        
-        .preview-container {
-            position: relative;
-            display: inline-block;
-            margin: 20px 0;
-        }
-        
-        .preview-image {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 8px;
-        }
-        
-        .itabs-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
-            background: rgba(33, 150, 243, 0.9);
-            color: white;
-            border: 2px solid white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-        
-        .itabs-button:hover {
-            transform: scale(1.1);
-        }
-        
-        .itabs-popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .itabs-popup.active {
-            display: flex;
-        }
-        
-        .popup-content {
-            background: white;
-            border-radius: 8px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        
-        .popup-close {
-            position: sticky;
-            top: 0;
-            background: white;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            text-align: right;
-            z-index: 1;
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-            padding: 0;
-            width: auto;
-        }
-        
-        .popup-section {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .popup-section:last-child {
-            border-bottom: none;
-        }
-        
-        .popup-section h3 {
-            color: #2196F3;
-            margin-bottom: 10px;
-        }
-        
-        .popup-section p {
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .popup-button {
-            display: block;
-            width: calc(100% - 40px);
-            margin: 20px;
-            padding: 15px;
-            background: #4CAF50;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        
-        .popup-button:hover {
-            background: #45a049;
-        }
-        
-        .code-section {
-            margin-top: 20px;
-        }
-        
-        .code-box {
-            background: #f5f5f5;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 15px;
-            font-family: monospace;
-            font-size: 12px;
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-        }
-        
-        .success-message {
-            display: none;
-            background: #4CAF50;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
-            text-align: center;
-        }
-        
-        .success-message.active {
-            display: block;
-        }
-    </style>
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 60px;
+        padding: 20px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    footer a {
+        color: var(--accent);
+        text-decoration: none;
+    }
+</style>
+```
+
 </head>
 <body>
-    <h1>iTabs Generator</h1>
-    <p class="subtitle">Create your information popup in minutes</p>
+    <div class="container">
+        <header>
+            <h1>YouTube iTabs</h1>
+            <p class="subtitle">Transform any YouTube video into an interactive product display</p>
+        </header>
 
-    <div class="form-section">
-        <h2>Build Your iTabs</h2>
-        
-        <div class="form-group">
-            <label for="imageUrl">Product Image URL:</label>
-            <input type="url" id="imageUrl" placeholder="https://i.ibb.co/your-image.jpg" value="https://i.ibb.co/02PFk8h/IMG-1673.jpg">
+```
+    <div class="main-grid">
+        <div class="panel">
+            <h2 class="panel-title">Video Input</h2>
+            
+            <div class="info-box">
+                📺 Paste any YouTube URL. The generator will extract video details and create compelling marketing copy using AI.
+            </div>
+
+            <div class="input-group">
+                <label for="youtubeUrl">YouTube URL</label>
+                <input 
+                    type="text" 
+                    id="youtubeUrl" 
+                    placeholder="https://www.youtube.com/watch?v=..."
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="geminiKey">Gemini API Key</label>
+                <input 
+                    type="password" 
+                    id="geminiKey" 
+                    placeholder="Your Gemini API key for AI content generation"
+                >
+                <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 6px;">
+                    Get your free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--accent);">Google AI Studio</a>
+                </small>
+            </div>
+
+            <div class="input-group">
+                <label for="productName">Product/Video Name (Optional)</label>
+                <input 
+                    type="text" 
+                    id="productName" 
+                    placeholder="Leave blank to use video title"
+                >
+            </div>
+
+            <button class="btn" onclick="generateiTabs()">Generate iTabs</button>
+
+            <div class="preview-container" id="videoPreview"></div>
+            <div class="status-message" id="statusMessage"></div>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing video and generating content...</p>
+            </div>
         </div>
-        
-        <div class="form-group">
-            <label for="section1">What is it?</label>
-            <textarea id="section1">iTabs is a simple information popup system that helps explain confusing products to customers. Just add a little "i" button to any product image, and customers can click to learn more in plain English.</textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="section2">Why do I need it?</label>
-            <textarea id="section2">Customers abandon products they don't understand. Technical jargon, part numbers, and confusing specifications lose you sales. iTabs translates complex products into simple explanations that anyone can understand.</textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="section3">How does it work?</label>
-            <textarea id="section3">Click the "i" button on any product image. A popup appears with clear sections explaining what the product is, why you need it, and what makes it special. Scroll through the information, then click the button at the bottom to take action.</textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="section4">What makes it different?</label>
-            <textarea id="section4">iTabs works on any website, mobile or desktop. No complicated setup, no database required. It's self-explanatory - the product demonstrates itself. Business owners can create iTabs in minutes, and customers understand products instantly.</textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="buttonText">Button Text:</label>
-            <input type="text" id="buttonText" value="Get iTabs For Your Business">
-        </div>
-        
-        <div class="form-group">
-            <label for="buttonLink">Button Links To:</label>
-            <input type="url" id="buttonLink" placeholder="https://your-website.com" value="https://example.com/contact">
-        </div>
-        
-        <div class="button-group">
-            <button class="btn-generate" id="generateBtn">Generate iTabs Code</button>
-            <button class="btn-clear" id="clearBtn">Clear Form</button>
+
+        <div class="panel">
+            <h2 class="panel-title">Generated Code</h2>
+            
+            <div class="info-box">
+                💻 Copy the generated code and paste it into your website, landing page, or campaign.
+            </div>
+
+            <div id="outputArea" style="min-height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+                <p>Your iTabs code will appear here...</p>
+            </div>
+
+            <div class="code-output" id="codeOutput"></div>
+            
+            <button class="btn btn-secondary" id="copyBtn" onclick="copyCode()" style="display: none;">
+                Copy Code to Clipboard
+            </button>
         </div>
     </div>
 
-    <div class="preview-section" id="previewSection">
-        <h2>Preview Your iTabs</h2>
-        <p style="color: #666; margin-bottom: 20px;">Click the "i" button to test your popup</p>
-        
-        <div class="preview-container">
-            <img id="previewImage" class="preview-image" src="" alt="Product">
-            <div class="itabs-button" id="previewItabsBtn">i</div>
-        </div>
-        
-        <div class="code-section">
-            <h3>Your iTabs Code</h3>
-            <p style="color: #666; margin-bottom: 10px;">Copy this code and paste it on your website:</p>
-            <div class="code-box" id="codeBox"></div>
-            <button class="btn-copy" id="copyBtn">Copy Code</button>
-            <div class="success-message" id="successMessage">Code copied to clipboard!</div>
-        </div>
-    </div>
-
-    <div class="itabs-popup" id="itabsPopup">
-        <div class="popup-content" id="popupContent">
-            <div class="popup-close">
-                <button class="close-btn" id="closeBtn">&times;</button>
-            </div>
-            <div class="popup-section">
-                <h3>What is it?</h3>
-                <p id="popupSection1"></p>
-            </div>
-            <div class="popup-section">
-                <h3>Why do I need it?</h3>
-                <p id="popupSection2"></p>
-            </div>
-            <div class="popup-section">
-                <h3>How does it work?</h3>
-                <p id="popupSection3"></p>
-            </div>
-            <div class="popup-section">
-                <h3>What makes it different?</h3>
-                <p id="popupSection4"></p>
-            </div>
-            <a href="#" id="popupButton" class="popup-button" target="_blank"></a>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const generateBtn = document.getElementById('generateBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const previewItabsBtn = document.getElementById('previewItabsBtn');
-            const closeBtn = document.getElementById('closeBtn');
-            const itabsPopup = document.getElementById('itabsPopup');
-            const popupContent = document.getElementById('popupContent');
-            
-            generateBtn.addEventListener('click', generatePreview);
-            clearBtn.addEventListener('click', clearForm);
-            copyBtn.addEventListener('click', copyCode);
-            previewItabsBtn.addEventListener('click', openPopup);
-            closeBtn.addEventListener('click', closePopup);
-            
-            itabsPopup.addEventListener('click', function(e) {
-                if (e.target === itabsPopup) {
-                    closePopup();
-                }
-            });
-            
-            popupContent.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        });
-        
-        function generatePreview() {
-            const imageUrl = document.getElementById('imageUrl').value;
-            const section1 = document.getElementById('section1').value;
-            const section2 = document.getElementById('section2').value;
-            const section3 = document.getElementById('section3').value;
-            const section4 = document.getElementById('section4').value;
-            const buttonText = document.getElementById('buttonText').value;
-            const buttonLink = document.getElementById('buttonLink').value;
-            
-            document.getElementById('previewImage').src = imageUrl;
-            document.getElementById('popupSection1').textContent = section1;
-            document.getElementById('popupSection2').textContent = section2;
-            document.getElementById('popupSection3').textContent = section3;
-            document.getElementById('popupSection4').textContent = section4;
-            document.getElementById('popupButton').textContent = buttonText;
-            document.getElementById('popupButton').href = buttonLink;
-            
-            const code = generateCode(imageUrl, section1, section2, section3, section4, buttonText, buttonLink);
-            document.getElementById('codeBox').textContent = code;
-            
-            document.getElementById('previewSection').classList.add('active');
-            document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function generateCode(imageUrl, s1, s2, s3, s4, btnText, btnLink) {
-            return `<!-- iTabs Code - Paste this where you want the product image -->
-<div style="position: relative; display: inline-block;">
-    <img src="${imageUrl}" alt="Product" style="max-width: 100%; height: auto; border-radius: 8px;">
-    <div id="itabsBtn" style="position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; background: rgba(33, 150, 243, 0.9); color: white; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">i</div>
-</div>
-
-<div id="itabsPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
-    <div id="itabsContent" style="background: white; border-radius: 8px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto;">
-        <div style="position: sticky; top: 0; background: white; padding: 15px; border-bottom: 1px solid #eee; text-align: right;">
-            <button id="itabsClose" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
-        </div>
-        <div style="padding: 20px; border-bottom: 1px solid #eee;">
-            <h3 style="color: #2196F3; margin-bottom: 10px;">What is it?</h3>
-            <p>${s1}</p>
-        </div>
-        <div style="padding: 20px; border-bottom: 1px solid #eee;">
-            <h3 style="color: #2196F3; margin-bottom: 10px;">Why do I need it?</h3>
-            <p>${s2}</p>
-        </div>
-        <div style="padding: 20px; border-bottom: 1px solid #eee;">
-            <h3 style="color: #2196F3; margin-bottom: 10px;">How does it work?</h3>
-            <p>${s3}</p>
-        </div>
-        <div style="padding: 20px; border-bottom: 1px solid #eee;">
-            <h3 style="color: #2196F3; margin-bottom: 10px;">What makes it different?</h3>
-            <p>${s4}</p>
-        </div>
-        <a href="${btnLink}" target="_blank" style="display: block; width: calc(100% - 40px); margin: 20px; padding: 15px; background: #4CAF50; color: white; text-align: center; text-decoration: none; border-radius: 4px; font-weight: bold;">${btnText}</a>
-    </div>
+    <footer>
+        <p>Built with ❤️ for creators • Powered by <a href="https://ai.google.dev/" target="_blank">Gemini AI</a></p>
+    </footer>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('itabsBtn').addEventListener('click', function() {
-        document.getElementById('itabsPopup').style.display = 'flex';
+    let generatedCode = '';
+
+    function showStatus(message, type) {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.textContent = message;
+        statusEl.className = `status-message active ${type}`;
+        setTimeout(() => {
+            statusEl.classList.remove('active');
+        }, 5000);
+    }
+
+    function extractVideoId(url) {
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+            /youtube\.com\/shorts\/([^&\?\/]+)/
+        ];
+        
+        for (const pattern of patterns) {
+            const match = url.match(pattern);
+            if (match) return match[1];
+        }
+        return null;
+    }
+
+    async function getVideoInfo(videoId) {
+        try {
+            // Using YouTube oEmbed API (no auth required)
+            const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+            if (!response.ok) throw new Error('Failed to fetch video info');
+            return await response.json();
+        } catch (error) {
+            throw new Error('Could not fetch video information. Please check the URL.');
+        }
+    }
+
+    async function generateWithGemini(prompt, apiKey) {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'Gemini API request failed');
+        }
+
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    }
+
+    async function generateiTabs() {
+        const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
+        const geminiKey = document.getElementById('geminiKey').value.trim();
+        const customName = document.getElementById('productName').value.trim();
+
+        if (!youtubeUrl) {
+            showStatus('Please enter a YouTube URL', 'error');
+            return;
+        }
+
+        if (!geminiKey) {
+            showStatus('Please enter your Gemini API key', 'error');
+            return;
+        }
+
+        const videoId = extractVideoId(youtubeUrl);
+        if (!videoId) {
+            showStatus('Invalid YouTube URL', 'error');
+            return;
+        }
+
+        // Show loading
+        document.getElementById('loading').classList.add('active');
+        document.getElementById('codeOutput').classList.remove('active');
+        document.getElementById('copyBtn').style.display = 'none';
+
+        try {
+            // Get video info
+            const videoInfo = await getVideoInfo(videoId);
+            const productName = customName || videoInfo.title;
+            
+            // Show video preview
+            const previewEl = document.getElementById('videoPreview');
+            previewEl.innerHTML = `
+                <div class="video-preview">
+                    <img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="Video thumbnail">
+                    <div class="video-info">
+                        <h3>${productName}</h3>
+                        <p>by ${videoInfo.author_name}</p>
+                    </div>
+                </div>
+            `;
+            previewEl.classList.add('active');
+
+            // Generate content with Gemini
+            const prompt = `You are a marketing copywriter. Based on this YouTube video title and information, create compelling marketing copy.
+```
+
+Video Title: ${videoInfo.title}
+Author: ${videoInfo.author_name}
+Product Name: ${productName}
+
+Create exactly 4 sections with these headings:
+
+1. “What is it?” - A 2-3 sentence description of what this product/service/video is about
+1. “Why do I need it?” - A 2-3 sentence explanation of the benefits and value
+1. “How does it work?” - A 2-3 sentence explanation of how it functions or how to use it
+1. “What makes it different?” - A 2-3 sentence explanation of unique features or advantages
+
+Format your response EXACTLY like this (use these exact headings):
+
+What is it?
+[Your 2-3 sentence answer here]
+
+Why do I need it?
+[Your 2-3 sentence answer here]
+
+How does it work?
+[Your 2-3 sentence answer here]
+
+What makes it different?
+[Your 2-3 sentence answer here]
+
+Keep each section concise, compelling, and focused. Write in an enthusiastic but professional tone.`;
+
+```
+            const aiResponse = await generateWithGemini(prompt, geminiKey);
+            
+            // Parse AI response
+            const sections = parseAIResponse(aiResponse);
+
+            // Get thumbnails (YouTube provides multiple sizes)
+            const thumbnails = [
+                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
+            ];
+
+            // Generate iTabs code
+            generatedCode = generateiTabsCode(productName, youtubeUrl, thumbnails, sections);
+
+            // Display code
+            document.getElementById('codeOutput').textContent = generatedCode;
+            document.getElementById('codeOutput').classList.add('active');
+            document.getElementById('copyBtn').style.display = 'block';
+            document.getElementById('outputArea').style.display = 'none';
+
+            showStatus('iTabs code generated successfully!', 'success');
+
+        } catch (error) {
+            showStatus(error.message, 'error');
+            console.error(error);
+        } finally {
+            document.getElementById('loading').classList.remove('active');
+        }
+    }
+
+    function parseAIResponse(text) {
+        const sections = {
+            whatIsIt: '',
+            whyNeedIt: '',
+            howWorks: '',
+            whatDifferent: ''
+        };
+
+        // Split by the section headers
+        const whatMatch = text.match(/What is it\?[\s\n]+([\s\S]*?)(?=Why do I need it\?|$)/i);
+        const whyMatch = text.match(/Why do I need it\?[\s\n]+([\s\S]*?)(?=How does it work\?|$)/i);
+        const howMatch = text.match(/How does it work\?[\s\n]+([\s\S]*?)(?=What makes it different\?|$)/i);
+        const diffMatch = text.match(/What makes it different\?[\s\n]+([\s\S]*?)$/i);
+
+        sections.whatIsIt = whatMatch ? whatMatch[1].trim() : 'An innovative solution designed to meet your needs.';
+        sections.whyNeedIt = whyMatch ? whyMatch[1].trim() : 'It provides exceptional value and solves real problems.';
+        sections.howWorks = howMatch ? howMatch[1].trim() : 'Simple to use with an intuitive interface and powerful features.';
+        sections.whatDifferent = diffMatch ? diffMatch[1].trim() : 'Unique features and exceptional quality set it apart.';
+
+        return sections;
+    }
+
+    function generateiTabsCode(productName, youtubeUrl, images, sections) {
+        return `<!-- iTabs Code - Paste this where you want your iTabs to appear -->
+```
+
+<div style="background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 500px; margin: 20px auto;">
+    <div style="position: relative; width: 100%; height: 350px; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div style="position: relative; width: 100%; height: 100%; overflow: hidden;">
+            <div id="itabsTrack" style="display: flex; transition: transform 0.4s ease; height: 100%;">
+${images.map((img, index) => `                <div style="min-width: 100%; height: 100%;">
+                    <img src="${img}" alt="${productName} ${index + 1}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>`).join('\n')}
+            </div>
+        </div>
+        <div style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 15;">
+${images.map((_, index) => `            <div class="itabs-dot" data-slide="${index}" style="width: 10px; height: 10px; border-radius: 50%; background: ${index === 0 ? 'white' : 'rgba(255,255,255,0.5)'}; cursor: pointer; transition: all 0.3s; border: 2px solid white;"></div>`).join('\n')}
+        </div>
+        <div id="itabsCounter" style="position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 15px; font-size: 14px; font-weight: bold; z-index: 15;">1/${images.length}</div>
+        <div style="position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; background: rgba(255,255,255,0.95); color: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border: 3px solid white; z-index: 20;" onclick="document.getElementById('itabsPopup').style.display='flex'">i</div>
+    </div>
+    <div style="padding: 25px; text-align: center; position: relative;">
+        <h3 style="font-size: 1.3em; color: #2d3748; margin-bottom: 10px; font-weight: 600;">${productName}</h3>
+        <p style="color: #718096; font-size: 1em; line-height: 1.6;">Swipe to see more images!</p>
+    </div>
+</div>
+
+<div id="itabsPopup" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 20px;">
+    <div style="position: relative; background-color: white; border-radius: 20px; width: 90%; max-width: 600px; max-height: 80vh; box-shadow: 0 20px 60px rgba(0,0,0,0.4); overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.8em;">${productName}</h3>
+            <button onclick="document.getElementById('itabsPopup').style.display='none'" style="color: white; font-size: 40px; font-weight: bold; cursor: pointer; background: none; border: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">&times;</button>
+        </div>
+        <div style="padding: 35px; max-height: calc(80vh - 120px); overflow-y: auto;">
+            <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px;">What is it?</h4>
+            <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">${sections.whatIsIt}</p>
+
+```
+        <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">Why do I need it?</h4>
+        <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">${sections.whyNeedIt}</p>
+
+        <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">How does it work?</h4>
+        <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">${sections.howWorks}</p>
+
+        <h4 style="color: #667eea; font-size: 1.4em; margin-bottom: 15px; margin-top: 25px;">What makes it different?</h4>
+        <p style="color: #4a5568; font-size: 1.05em; line-height: 1.8; margin-bottom: 15px;">${sections.whatDifferent}</p>
+
+        <a href="${youtubeUrl}" target="_blank" style="display: block; margin: 25px 0; padding: 15px; background: #FF0000; color: white; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1em;">▶ Watch on YouTube</a>
+    </div>
+</div>
+```
+
+</div>
+
+<script>
+var itabsCurrentSlide = 0;
+var itabsTotalSlides = ${images.length};
+var itabsTouchStartX = 0;
+var itabsTouchEndX = 0;
+
+function itabsGoToSlide(index) {
+    itabsCurrentSlide = index;
+    itabsUpdateCarousel();
+}
+
+function itabsUpdateCarousel() {
+    var track = document.getElementById('itabsTrack');
+    var counter = document.getElementById('itabsCounter');
+    var dots = document.querySelectorAll('.itabs-dot');
+    track.style.transform = 'translateX(-' + (itabsCurrentSlide * 100) + '%)';
+    if (counter) counter.textContent = (itabsCurrentSlide + 1) + '/' + itabsTotalSlides;
+    dots.forEach(function(dot, index) {
+        dot.style.background = index === itabsCurrentSlide ? 'white' : 'rgba(255,255,255,0.5)';
     });
-    
-    document.getElementById('itabsClose').addEventListener('click', function() {
-        document.getElementById('itabsPopup').style.display = 'none';
+}
+
+var trackElement = document.getElementById('itabsTrack');
+if (trackElement) {
+    trackElement.addEventListener('touchstart', function(e) {
+        itabsTouchStartX = e.changedTouches[0].screenX;
     });
-    
-    document.getElementById('itabsPopup').addEventListener('click', function(e) {
-        if (e.target.id === 'itabsPopup') {
-            document.getElementById('itabsPopup').style.display = 'none';
+    trackElement.addEventListener('touchend', function(e) {
+        itabsTouchEndX = e.changedTouches[0].screenX;
+        if (itabsTouchEndX < itabsTouchStartX - 50) {
+            itabsCurrentSlide++;
+            if (itabsCurrentSlide >= itabsTotalSlides) itabsCurrentSlide = 0;
+            itabsUpdateCarousel();
+        }
+        if (itabsTouchEndX > itabsTouchStartX + 50) {
+            itabsCurrentSlide--;
+            if (itabsCurrentSlide < 0) itabsCurrentSlide = itabsTotalSlides - 1;
+            itabsUpdateCarousel();
         }
     });
-    
-    document.getElementById('itabsContent').addEventListener('click', function(e) {
-        e.stopPropagation();
+}
+
+document.querySelectorAll('.itabs-dot').forEach(function(dot) {
+    dot.addEventListener('click', function() {
+        itabsGoToSlide(parseInt(this.getAttribute('data-slide')));
     });
 });
-</scr` + `ipt>`;
-        }
-        
-        function clearForm() {
-            document.getElementById('imageUrl').value = '';
-            document.getElementById('section1').value = '';
-            document.getElementById('section2').value = '';
-            document.getElementById('section3').value = '';
-            document.getElementById('section4').value = '';
-            document.getElementById('buttonText').value = '';
-            document.getElementById('buttonLink').value = '';
-            document.getElementById('previewSection').classList.remove('active');
-        }
-        
-        function openPopup() {
-            document.getElementById('itabsPopup').classList.add('active');
-        }
-        
-        function closePopup() {
-            document.getElementById('itabsPopup').classList.remove('active');
-        }
-        
-        function copyCode() {
-            const codeBox = document.getElementById('codeBox');
-            const textArea = document.createElement('textarea');
-            textArea.value = codeBox.textContent;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
+
+document.getElementById('itabsPopup').addEventListener('click', function(e) {
+    if (e.target.id === 'itabsPopup') this.style.display = 'none';
+});
+
+// Auto-advance carousel
+setInterval(function() {
+    itabsCurrentSlide++;
+    if (itabsCurrentSlide >= itabsTotalSlides) itabsCurrentSlide = 0;
+    itabsUpdateCarousel();
+}, 5000);
+</script>`;
+
+```
+    }
+
+    function copyCode() {
+        navigator.clipboard.writeText(generatedCode).then(() => {
+            const btn = document.getElementById('copyBtn');
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Copied!';
+            btn.style.background = 'linear-gradient(135deg, var(--success) 0%, #00dd77 100%)';
             
-            const successMessage = document.getElementById('successMessage');
-            successMessage.classList.add('active');
             setTimeout(() => {
-                successMessage.classList.remove('active');
-            }, 3000);
-        }
-    </script>
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }).catch(err => {
+            showStatus('Failed to copy code', 'error');
+        });
+    }
+
+    // Allow Enter key to submit
+    document.getElementById('youtubeUrl').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') generateiTabs();
+    });
+</script>
+```
+
 </body>
 </html>
